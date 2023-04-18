@@ -17,7 +17,7 @@ setup(
         "lmdb",
         "clip @ git+https://github.com/openai/CLIP.git",
         "mpi4py",
-        "flash-attn",
+        "flash-attn==0.2.8",
         "pillow",
     ],
 )
