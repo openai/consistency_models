@@ -6,7 +6,6 @@ build:
 	docker build -t ${NAME}:${TAG} -f Dockerfile .
 
 run:
-	@$(MAKE) container-stop-rm;\
 	docker container run --gpus all\
 		--restart=always\
 		-it -d \
