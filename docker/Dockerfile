@@ -11,7 +11,8 @@ RUN echo "export PATH=/usr/local/cuda/bin:$PATH" >> /etc/bash.bashrc \
     && echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH" >> /etc/bash.bashrc
 
 RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel packaging mpi4py \
-    && pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118
+    && pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118 \
+    && pip3 install flash-attn==0.2.8
 
 WORKDIR /home/
 RUN pip3 install -e git+https://github.com/openai/consistency_models.git@main#egg=consistency_models \
