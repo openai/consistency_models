@@ -5,7 +5,10 @@ numpy array. This can be used to produce samples for FID evaluation.
 
 import argparse
 import os
+import time
+from pathlib import Path
 
+from PIL import Image
 import numpy as np
 import torch as th
 import torch.distributed as dist
@@ -21,6 +24,8 @@ from cm.script_util import (
 from cm.random_util import get_generator
 from cm.karras_diffusion import karras_sample
 
+out_dir = Path(__file__).parent / "samples"
+out_dir.mkdir(exist_ok=True)
 
 def main():
     args = create_argparser().parse_args()
@@ -57,6 +62,7 @@ def main():
     all_labels = []
     generator = get_generator(args.generator, args.num_samples, args.seed)
 
+    start_time = time.time()
     while len(all_images) * args.batch_size < args.num_samples:
         model_kwargs = {}
         if args.class_cond:
@@ -97,20 +103,20 @@ def main():
             dist.all_gather(gathered_labels, classes)
             all_labels.extend([labels.cpu().numpy() for labels in gathered_labels])
         logger.log(f"created {len(all_images) * args.batch_size} samples")
-
+    print(f"Time taken: {time.time() - start_time} seconds")
     arr = np.concatenate(all_images, axis=0)
     arr = arr[: args.num_samples]
     if args.class_cond:
         label_arr = np.concatenate(all_labels, axis=0)
         label_arr = label_arr[: args.num_samples]
     if dist.get_rank() == 0:
-        shape_str = "x".join([str(x) for x in arr.shape])
-        out_path = os.path.join(logger.get_dir(), f"samples_{shape_str}.npz")
-        logger.log(f"saving to {out_path}")
-        if args.class_cond:
-            np.savez(out_path, arr, label_arr)
-        else:
-            np.savez(out_path, arr)
+        logger.log(f"saving to {out_dir}")
+        # if args.class_cond:
+        #     np.savez(out_path, arr, label_arr)
+        # else:
+        #     np.savez(out_path, arr)
+        for i in range(arr.shape[0]):
+            Image.fromarray(arr[i]).save(out_dir / f"sample{i:03}.png")
 
     dist.barrier()
     logger.log("sampling complete")

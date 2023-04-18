@@ -19,3 +19,7 @@ dist/
 
 # Other
 *.DS_Store
+
+venv
+.venv
+.env
