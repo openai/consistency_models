@@ -344,7 +344,6 @@ class QKVFlashAttention(nn.Module):
         from flash_attn.flash_attention import FlashAttention
 
         assert batch_first
-        factory_kwargs = {"device": device, "dtype": dtype}
         super().__init__()
         self.embed_dim = embed_dim
         self.num_heads = num_heads
@@ -357,7 +356,7 @@ class QKVFlashAttention(nn.Module):
         assert self.head_dim in [16, 32, 64], "Only support head_dim == 16, 32, or 64"
 
         self.inner_attn = FlashAttention(
-            attention_dropout=attention_dropout, **factory_kwargs
+            attention_dropout=attention_dropout
         )
         self.rearrange = rearrange
 
