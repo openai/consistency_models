@@ -287,9 +287,9 @@ class CMTrainLoop(TrainLoop):
 
         if target_model:
             self._load_and_sync_target_parameters()
-            self.target_model.requires_grad_(False)
             self.target_model.train()
             if self.use_fp16:
+                self.target_model.requires_grad_(False)
                 self.target_model_param_groups_and_shapes = get_param_groups_and_shapes(
                     self.target_model.named_parameters()
                 )
