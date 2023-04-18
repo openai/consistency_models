@@ -14,5 +14,4 @@ RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel packaging mpi4py 
     && pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
 WORKDIR /home/
-COPY ./src/consistency-models /home/consistency-models
 RUN pip3 install -e git+https://github.com/openai/consistency_models.git@main#egg=consistency_models
