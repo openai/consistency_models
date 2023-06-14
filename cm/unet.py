@@ -402,6 +402,9 @@ class QKVAttentionLegacy(nn.Module):
     def __init__(self, n_heads):
         super().__init__()
         self.n_heads = n_heads
+        from einops import rearrange
+        self.rearrange = rearrange
+
 
     def forward(self, qkv):
         """
@@ -413,13 +416,23 @@ class QKVAttentionLegacy(nn.Module):
         bs, width, length = qkv.shape
         assert width % (3 * self.n_heads) == 0
         ch = width // (3 * self.n_heads)
-        q, k, v = qkv.reshape(bs * self.n_heads, ch * 3, length).split(ch, dim=1)
+        qkv = qkv.half()
+
+        qkv =   self.rearrange(
+            qkv, "b (three h d) s -> b s three h d", three=3, h=self.n_heads
+        ) 
+        q, k, v = qkv.transpose(1, 3).transpose(3, 4).split(1, dim=2)
+        q = q.reshape(bs*self.n_heads, ch, length)
+        k = k.reshape(bs*self.n_heads, ch, length)
+        v = v.reshape(bs*self.n_heads, ch, length)
+
         scale = 1 / math.sqrt(math.sqrt(ch))
         weight = th.einsum(
             "bct,bcs->bts", q * scale, k * scale
         )  # More stable with f16 than dividing afterwards
-        weight = th.softmax(weight.float(), dim=-1).type(weight.dtype)
+        weight = th.softmax(weight, dim=-1).type(weight.dtype)
         a = th.einsum("bts,bcs->bct", weight, v)
+        a = a.float()
         return a.reshape(bs, -1, length)
 
     @staticmethod
