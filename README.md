@@ -2,7 +2,7 @@
 
 This repository contains the codebase for [Consistency Models](https://arxiv.org/abs/2303.01469), implemented using PyTorch for conducting large-scale experiments on ImageNet-64, LSUN Bedroom-256, and LSUN Cat-256. We have based our repository on [openai/guided-diffusion](https://github.com/openai/guided-diffusion), which was initially released under the MIT license. Our modifications have enabled support for consistency distillation, consistency training, as well as several sampling and editing algorithms discussed in the paper.
 
-The repository for CIFAR-10 experiments is in JAX and will be released separately.
+The repository for CIFAR-10 experiments is in JAX and can be found at [openai/consistency_models_cifar10](https://github.com/openai/consistency_models_cifar10).
 
 # Pre-trained models
 
@@ -32,7 +32,7 @@ pip install -e .
 
 # Model training and sampling
 
-We provide examples of EDM training, consistency distillation, consistency training, single-step generation, and multistep generation in [cm/scripts/launch.sh](scripts/launch.sh).
+We provide examples of EDM training, consistency distillation, consistency training, single-step generation, and multistep generation in [scripts/launch.sh](scripts/launch.sh).
 
 # Evaluations
 
