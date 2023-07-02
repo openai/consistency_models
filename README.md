@@ -30,6 +30,11 @@ To install all packages in this codebase along with their dependencies, run
 pip install -e .
 ```
 
+To install with Docker, run the following commands:
+```sh
+cd docker && make build && make run
+```
+
 # Model training and sampling
 
 We provide examples of EDM training, consistency distillation, consistency training, single-step generation, and multistep generation in [scripts/launch.sh](scripts/launch.sh).
