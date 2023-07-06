@@ -73,7 +73,7 @@ image.save("consistency_model_onestep_sample_penguin.png")
 image = pipe(timesteps=[22, 0], class_labels=145).images[0]
 image.save("consistency_model_multistep_sample_penguin.png")
 ```
-You can further speed up the inference process by using `torch.compile()` on `pipe.unet` (only supported from Torch 2.0). For more details, please check out the [official documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/consistency_models). This support was contributed to 🧨 diffusers by [dg845](https://github.com/dg845) and [ayushtues](https://github.com/ayushtues).
+You can further speed up the inference process by using `torch.compile()` on `pipe.unet` (only supported from PyTorch 2.0). For more details, please check out the [official documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/consistency_models). This support was contributed to 🧨 diffusers by [dg845](https://github.com/dg845) and [ayushtues](https://github.com/ayushtues).
 
 # Citation
 
