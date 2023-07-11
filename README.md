@@ -43,6 +43,38 @@ We provide examples of EDM training, consistency distillation, consistency train
 
 To compare different generative models, we use FID, Precision, Recall, and Inception Score. These metrics can all be calculated using batches of samples stored in `.npz` (numpy) files. One can evaluate samples with [cm/evaluations/evaluator.py](evaluations/evaluator.py) in the same way as described in [openai/guided-diffusion](https://github.com/openai/guided-diffusion), with reference dataset batches provided therein.
 
+## Use in 🧨 diffusers
+
+Consistency models are supported in [🧨 diffusers](https://github.com/huggingface/diffusers) via the [`ConsistencyModelPipeline` class](https://huggingface.co/docs/diffusers/main/en/api/pipelines/consistency_models). Below we provide an example:
+
+```python
+import torch
+
+from diffusers import ConsistencyModelPipeline
+
+device = "cuda"
+# Load the cd_imagenet64_l2 checkpoint.
+model_id_or_path = "openai/diffusers-cd_imagenet64_l2"
+pipe = ConsistencyModelPipeline.from_pretrained(model_id_or_path, torch_dtype=torch.float16)
+pipe.to(device)
+
+# Onestep Sampling
+image = pipe(num_inference_steps=1).images[0]
+image.save("consistency_model_onestep_sample.png")
+
+# Onestep sampling, class-conditional image generation
+# ImageNet-64 class label 145 corresponds to king penguins
+image = pipe(num_inference_steps=1, class_labels=145).images[0]
+image.save("consistency_model_onestep_sample_penguin.png")
+
+# Multistep sampling, class-conditional image generation
+# Timesteps can be explicitly specified; the particular timesteps below are from the original Github repo.
+# https://github.com/openai/consistency_models/blob/main/scripts/launch.sh#L77
+image = pipe(timesteps=[22, 0], class_labels=145).images[0]
+image.save("consistency_model_multistep_sample_penguin.png")
+```
+You can further speed up the inference process by using `torch.compile()` on `pipe.unet` (only supported from PyTorch 2.0). For more details, please check out the [official documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/consistency_models). This support was contributed to 🧨 diffusers by [dg845](https://github.com/dg845) and [ayushtues](https://github.com/ayushtues).
+
 # Citation
 
 If you find this method and/or code useful, please consider citing
