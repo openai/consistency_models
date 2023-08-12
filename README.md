@@ -64,13 +64,17 @@ image.save("consistency_model_onestep_sample.png")
 
 # Onestep sampling, class-conditional image generation
 # ImageNet-64 class label 145 corresponds to king penguins
-image = pipe(num_inference_steps=1, class_labels=145).images[0]
+
+class_id = 145
+class_id = torch.tensor(class_id, dtype=torch.long)
+
+image = pipe(num_inference_steps=1, class_labels=class_id).images[0]
 image.save("consistency_model_onestep_sample_penguin.png")
 
 # Multistep sampling, class-conditional image generation
 # Timesteps can be explicitly specified; the particular timesteps below are from the original Github repo.
 # https://github.com/openai/consistency_models/blob/main/scripts/launch.sh#L77
-image = pipe(timesteps=[22, 0], class_labels=145).images[0]
+image = pipe(timesteps=[22, 0], class_labels=class_id).images[0]
 image.save("consistency_model_multistep_sample_penguin.png")
 ```
 You can further speed up the inference process by using `torch.compile()` on `pipe.unet` (only supported from PyTorch 2.0). For more details, please check out the [official documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/consistency_models). This support was contributed to 🧨 diffusers by [dg845](https://github.com/dg845) and [ayushtues](https://github.com/ayushtues).
