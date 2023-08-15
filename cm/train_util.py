@@ -283,18 +283,20 @@ class CMTrainLoop(TrainLoop):
         self.teacher_model = teacher_model
         self.teacher_diffusion = teacher_diffusion
         self.total_training_steps = total_training_steps
+        self.target_model_master_params = list(self.target_model.parameters())
 
         if target_model:
             self._load_and_sync_target_parameters()
-            self.target_model.requires_grad_(False)
             self.target_model.train()
-
-            self.target_model_param_groups_and_shapes = get_param_groups_and_shapes(
-                self.target_model.named_parameters()
-            )
-            self.target_model_master_params = make_master_params(
-                self.target_model_param_groups_and_shapes
-            )
+            if self.use_fp16:
+                self.target_model.requires_grad_(False)
+                self.target_model_param_groups_and_shapes = get_param_groups_and_shapes(
+                    self.target_model.named_parameters()
+                )
+                self.target_model_master_params = make_master_params(
+                    self.target_model_param_groups_and_shapes
+                )
+                self.target_model.convert_to_fp16()
 
         if teacher_model:
             self._load_and_sync_teacher_parameters()
@@ -408,10 +410,11 @@ class CMTrainLoop(TrainLoop):
                 self.mp_trainer.master_params,
                 rate=target_ema,
             )
-            master_params_to_model_params(
-                self.target_model_param_groups_and_shapes,
-                self.target_model_master_params,
-            )
+            if self.use_fp16:
+                master_params_to_model_params(
+                    self.target_model_param_groups_and_shapes,
+                    self.target_model_master_params,
+                )
 
     def reset_training_for_progdist(self):
         assert self.training_mode == "progdist", "Training mode must be progdist"
