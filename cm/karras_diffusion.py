@@ -187,7 +187,7 @@ class KarrasDenoiser:
 
         x_t = x_start + noise * append_dims(t, dims)
 
-        dropout_state = th.get_rng_state()
+        dropout_state = (th.get_rng_state(), th.cuda.get_rng_state())
         distiller = denoise_fn(x_t, t)
 
         if teacher_model is None:
@@ -195,7 +195,8 @@ class KarrasDenoiser:
         else:
             x_t2 = heun_solver(x_t, t, t2, x_start).detach()
 
-        th.set_rng_state(dropout_state)
+        th.set_rng_state(dropout_state[0])
+        th.cuda.set_rng_state(dropout_state[1])
         distiller_target = target_denoise_fn(x_t2, t2)
         distiller_target = distiller_target.detach()
 
