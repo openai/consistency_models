@@ -97,7 +97,7 @@ class DeterministicGenerator:
 class DeterministicIndividualGenerator:
     """
     RNG to deterministically sample num_samples samples that does not depend on batch_size or mpi_machines
-    Uses a separate rng for each sample to reduce memoery usage
+    Uses a separate rng for each sample to reduce memory usage
     """
 
     def __init__(self, num_samples, seed=0):
