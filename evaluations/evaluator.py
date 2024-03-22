@@ -338,7 +338,7 @@ class ManifoldEstimator:
         return {
             "fraction": float(np.mean(batch_predictions)),
             "batch_predictions": batch_predictions,
-            "max_realisim_score": max_realism_score,
+            "max_realism_score": max_realism_score,
             "nearest_indices": nearest_indices,
         }
 
